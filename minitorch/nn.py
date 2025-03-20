@@ -145,7 +145,6 @@ def logsoftmax(input: Tensor, dim: int) -> Tensor:
     return e - lse
     # END ASSIGN4.4
 
-
 def maxpool2d(input: Tensor, kernel: Tuple[int, int]) -> Tensor:
     """
     Tiled max pooling 2D
@@ -239,7 +238,11 @@ def logsumexp(input: Tensor, dim: int) -> Tensor:
             NOTE: minitorch functions/tensor functions typically keep dimensions if you provide a dimensions.
     """  
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError
+    e = input
+    mx = Max.apply(e, tensor([dim]))
+    lse = mx + (e - mx).exp().sum(dim=dim).log()
+    return lse
+    
     ### END YOUR SOLUTION
 
 
@@ -259,6 +262,20 @@ def softmax_loss(logits: Tensor, target: Tensor) -> Tensor:
     """
     result = None
     ### BEGIN YOUR SOLUTION
-    raise NotImplementedError
+    # raise NotImplementedError
+    # breakpoint()
+    batch_size = logits.shape[0]
+    C = logits.shape[1]
+    logSum = logsumexp(logits, dim = 1)
+    
+    target_distrib = one_hot(target, C)
+
+    nume = (logits*target_distrib)
+    nume = nume.sum(dim = 1)
+    # nume = nume.exp()
+
+
+    result = logSum - nume
+
     ### END YOUR SOLUTION
     return result.view(batch_size, )

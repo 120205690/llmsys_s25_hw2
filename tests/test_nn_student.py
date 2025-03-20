@@ -60,6 +60,7 @@ def test_gelu_student(sizes, backend):
 @pytest.mark.parametrize("sizes", GENERAL_SHAPES)
 @pytest.mark.parametrize("backend", _BACKENDS, ids=["CudaKernelOps"])
 def test_logsumexp_student(sizes, backend):
+    # breakpoint()
     test_dir = f'./tests/data/logsumexp'
     test_str = '_'.join(map(str, sizes))
     data_path = os.path.join(test_dir, f'{test_str}_data.npy')
@@ -89,6 +90,7 @@ def test_logsumexp_student(sizes, backend):
 @pytest.mark.parametrize("classes", [2, 32, 128, 10000])
 @pytest.mark.parametrize("backend", _BACKENDS, ids=["CudaKernelOps"])
 def test_softmax_loss_student(batches, classes, backend):
+
     test_dir = f'./tests/data/softmax_loss'
     test_str = str(batches) + '_' + str(classes)
     logits_path = os.path.join(test_dir, f'{test_str}_logits.npy')
@@ -100,7 +102,7 @@ def test_softmax_loss_student(batches, classes, backend):
     targets_np = load_numpy_array(targets_path)
     _result = load_numpy_array(result_path)
     logits_grad = load_numpy_array(logits_grad_path) 
-
+    # breakpoint()
     logits = minitorch.tensor_from_numpy(logits_np, backend=backend, requires_grad=True)
     targets = minitorch.tensor_from_numpy(targets_np, backend=backend, requires_grad=True)
 

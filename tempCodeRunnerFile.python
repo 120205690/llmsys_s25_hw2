@@ -1,0 +1,9 @@
+import torch
+import numpy as np
+
+input = np.arange(0, 5) % 3
+out = np.eye(5)[input.astype(int)]
+
+print(input)
+print(np.eye(5))
+print(np.eye(5)[3])
