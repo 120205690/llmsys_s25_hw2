@@ -81,10 +81,11 @@ class Dropout(Module):
         """
         ### BEGIN YOUR SOLUTION
         # raise NotImplementedError
-        mask = rand(x.shape)
-        if self.training == False:
+        mask = rand(x.shape, backend = x.backend)
+        if self.training == False or self.p_dropout == 0:
             return x
         mask = self.p_dropout < mask
+        #adding 0 gets rid of the discrepancy between -0 and +0 
         out = mask * x * (1-self.p_dropout) + 0
         return out
         ### END YOUR SOLUTION
@@ -106,8 +107,8 @@ class Linear(Module):
         """
         self.out_size = out_size
         ### BEGIN YOUR SOLUTION
-        weight_npy = np.random.uniform(-math.sqrt(1/in_size), math.sqrt(1/in_size), (in_size, out_size))
-        bias_npy = np.random.uniform(-math.sqrt(1/in_size), math.sqrt(1/in_size), (out_size,))
+        weight_npy = np.random.uniform(-1/(in_size**0.5), 1/(in_size**0.5), (in_size, out_size))
+        bias_npy = np.random.uniform(-1/(in_size**0.5), 1/(in_size**0.5), (out_size,))
         
         self.weights = Parameter(tensor_from_numpy(weight_npy, backend = backend, requires_grad = True), name = 'linear_weight')
         if bias:
@@ -127,7 +128,7 @@ class Linear(Module):
         Returns:
             output : Tensor of shape (n, out_size)
         """
-        batch, in_size = x.shape
+        # batch, in_size = x.shape
         ### BEGIN YOUR SOLUTION
         # raise NotImplementedError
 
@@ -177,7 +178,7 @@ class LayerNorm1d(Module):
         mean = x.mean(dim = 1)
         var = x.var(dim = 1)
         x_norm = (x-mean)/((var + self.eps).__pow__(0.5))
-        out1 = x_norm * self.weights.value
-        out = out1 + self.bias.value
+        out = x_norm * self.weights.value
+        out = out + self.bias.value
         return out
         ### END YOUR SOLUTION

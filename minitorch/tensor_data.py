@@ -213,7 +213,7 @@ class TensorData:
         shape = self.shape
         if len(shape) == 0 and len(aindex) != 0:
             shape = (1,)
-            
+        
         # Check for errors
         if aindex.shape[0] != len(self.shape):
             raise IndexingError(f"Index {aindex} must be size of {self.shape}.")

@@ -112,7 +112,6 @@ def topological_sort(variable: Variable) -> Iterable[Variable]:
             topoList.append(u)
             return
         
-        
         for v in u.parents:
             if v.unique_id == u.unique_id:
                 continue
@@ -140,10 +139,7 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
     # TODO
     
     def add_grad(prev_grad, grad):
-        if prev_grad is None:
-            return grad
-        else:
-            return prev_grad + grad
+        return prev_grad + grad
     def find_index(node):
         return topoID.index(node.unique_id)
     def verify_no_constant_node(topoList):
@@ -152,17 +148,18 @@ def backpropagate(variable: Variable, deriv: Any) -> None:
             
     topoList = topological_sort(variable)
     topoID = [node.unique_id for node in topoList]
-    gradList = [None for node in topoList]
+    gradList = [0.0 for node in topoList]
     gradList[find_index(variable)] = deriv
     leafNodes = []
-    gradDict = {variable.unique_id:deriv}
-    verify_no_constant_node(topoList)
+    # gradDict = {variable.unique_id:deriv}
+    # verify_no_constant_node(topoList)
     for node in topoList:
         if node.is_leaf():
+            # if gradList[find_index(node)] = 0.0
             leafNodes.append(node)
         else:
             outgrad = gradList[find_index(node)]
-            assert (outgrad is not None)
+            # assert (outgrad is not None)
             parentGradIter = node.chain_rule(outgrad)
             for parentnode, parentgrad in parentGradIter:
                 if (parentnode.is_constant()):

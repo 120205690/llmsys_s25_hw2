@@ -1,9 +1,11 @@
-import torch
-import numpy as np
-
-input = np.arange(0, 5) % 3
-out = np.eye(5)[input.astype(int)]
-
-print(input)
-print(np.eye(5))
-print(np.eye(5)[3])
+d = {
+        'n_vocab': 4,  # vocab_size
+        'n_embd': 4,  # n_embed
+        'n_head': 8,  # n_head
+        'n_positions': 4,  # n_ctx == n_positions
+        # 'n_layer'     : 4,    # n_layer
+        'p_dropout': 0.1,  # x_pdrop
+        'ln_eps': 1e-5,  # layer_norm_epsilon
+        'backend': 4
+    }
+print(str(**d)) 
