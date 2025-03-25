@@ -15,13 +15,16 @@ import minitorch
 from minitorch import DecoderLM
 from minitorch.cuda_kernel_ops import CudaKernelOps
 
+#nohup python -u project/run_machine_translation.py &
+#kill -15 3495176
 
 def get_dataset(dataset_name, model_max_length):
     """
     Obtrain IWSLT (de-en) dataset.
     """
+    
     dataset = {
-        split: datasets.load_dataset(dataset_name, split=split)['translation']
+        split: datasets.load_dataset(dataset_name,use_auth_token=True, split=split)['translation']
         for split in ['train', 'validation', 'test']
     }
     src_key, tgt_key = 'de', 'en'
@@ -59,7 +62,7 @@ def get_tokenizer(examples, vocab_size, src_key, tgt_key, workdir):
         e.g., ("<eos_de>", "<eos_en>", "<pad>") if src_key and tgt_key are "de" and "en", respectively.
     """
     tokenizer = ByteLevelBPETokenizer()
-
+    
     # Customized training
     tokenizer.train_from_iterator(
         [[example[src_key], example[tgt_key]] for example in examples],
@@ -166,7 +169,7 @@ def loss_fn(batch, model):
     Returns:
     - A scalar loss value for this batch, averaged across all target tokens.
     """
-
+    
     idx = batch['input_ids']
     idx.requires_grad_(True)
     # print("getting into loss_fn")
@@ -187,7 +190,6 @@ def loss_fn(batch, model):
     )
 
     return ((loss * label_token_weights).sum() / label_token_weights.sum())
-
 
 def train(model, optimizer, examples, n_samples, collate_fn, batch_size, desc):
     """
@@ -285,7 +287,7 @@ def generate(model,
     Returns:
     - A list of generated target sequences.
     """
-
+    
     model.eval()
     gen_sents = []
     for example in tqdm.tqdm(examples, desc=f'Generating {desc}'):
@@ -299,17 +301,22 @@ def generate(model,
             # TODO
             # run the model with current token_ids, and predict the next token (gen_id)
             # hint: obtain the logits of next token, and take the argmax.
+            
             gen_id = 0
-            raise NotImplementedError("Generation Function Not Implemented Yet")
+            idx = np.array(token_ids)
+            idx = minitorch.tensor_from_numpy(idx, backend=backend).view(1, len(token_ids))
+            logits = model(idx = idx)
+            gen_id = np.argmax(logits.to_numpy(), axis = 2)[0][-1]
+
             # END ASSIGN2_2
 
             if gen_id == tokenizer.vocab[f'<eos_{tgt_key}>']:
                 break
             else:
                 token_ids.append(gen_id)
-
+        
         gen_sents.append(tokenizer.decode(token_ids[len_src:]))
-
+    
     return gen_sents
 
 
@@ -380,7 +387,7 @@ def main(dataset_name='bbaaaa/iwslt14-de-en-preprocess',
 
     dataset, src_key, tgt_key = get_dataset(
         dataset_name=dataset_name, model_max_length=model_max_length)
-
+    
     tokenizer = get_tokenizer(
         examples=dataset['train'],
         vocab_size=config['n_vocab'],
@@ -395,7 +402,10 @@ def main(dataset_name='bbaaaa/iwslt14-de-en-preprocess',
         tokenizer=tokenizer,
         model_max_length=model_max_length,
         backend=backend)
-
+    
+    # samples_per_epoch = 16
+    # batch_size = 16
+    # n_epochs = 1
     for epoch_idx in range(n_epochs):
         desc = f'epoch {epoch_idx} / {n_epochs}'
 

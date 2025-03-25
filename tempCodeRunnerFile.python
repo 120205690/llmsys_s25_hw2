@@ -1,11 +1,6 @@
-d = {
-        'n_vocab': 4,  # vocab_size
-        'n_embd': 4,  # n_embed
-        'n_head': 8,  # n_head
-        'n_positions': 4,  # n_ctx == n_positions
-        # 'n_layer'     : 4,    # n_layer
-        'p_dropout': 0.1,  # x_pdrop
-        'ln_eps': 1e-5,  # layer_norm_epsilon
-        'backend': 4
-    }
-print(str(**d)) 
+def foo(x,y,z):
+    print("x=" + str(x))
+    print("y=" + str(y))
+    print("z=" + str(z))
+mydict = {'x1':1,'y1':2,'z':3}
+foo(**mydict)

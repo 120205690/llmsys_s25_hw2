@@ -309,7 +309,7 @@ class DecoderLM(Module):
          - Ensure shape is (1, seq_len, n_embd)
         """
         token_emb = self.token_embeddings(idx)
-
+        
         pos_ids = tensor_from_numpy(np.arange(seq_len).reshape(1, seq_len), backend=self.backend)
         pos_emb = self.position_embeddings(pos_ids)
         
@@ -328,3 +328,4 @@ class DecoderLM(Module):
         out = out.view(batch_size, seq_len, self.n_vocab)
         return out
         ### END SOLUTION
+# export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/scratch/vma5214/minitorch/env/lib

@@ -8,7 +8,6 @@ from .tensor import Tensor
 from .tensor_functions import Function, rand, tensor, tensor_from_numpy
 import numpy as np
 import math
-
 def tile(input: Tensor, kernel: Tuple[int, int]) -> Tuple[Tensor, int, int]:
     """
     Reshape an image tensor for 2D pooling
